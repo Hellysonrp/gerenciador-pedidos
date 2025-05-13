@@ -13,3 +13,5 @@ As bibliotecas JavaScript também dependem do NPM ou equivalente para serem gere
 Recomenda-se instalar o ambiente [conforme mencionado na documentação do Laravel](https://laravel.com/docs/12.x/installation#installing-php).
 
 Após instalação do ambiente, instale todas as dependências com `composer install` e `npm install`. Execute o projeto com o comando `composer run dev`.
+
+É necessário também renomear o arquivo `.env.example` para `.env`, configurar o que for necessário (ex: dados de banco de dados) e executar também o comando `php artisan key:generate` para gerar a chave de criptografia do projeto.
