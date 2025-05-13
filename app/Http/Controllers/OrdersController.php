@@ -67,12 +67,12 @@ class OrdersController extends Controller
                 $p = Product::findOrFail($product['product_id']);
 
                 $validator = Validator::make([
-                    'remaining' => $p->stock - $product['quantity'],
+                    'estoque restante' => $p->stock - $product['quantity'],
                 ], [
-                    'remaining' => 'required|numeric|min:0',
+                    'estoque restante' => 'required|numeric|min:0',
                 ]);
                 if ($validator->fails()) {
-                    $validator->throwValidationException($validator);
+                    return redirect()->back()->withErrors($validator)->withInput();
                 }
 
                 $p->decrement('stock', $product['quantity']);
