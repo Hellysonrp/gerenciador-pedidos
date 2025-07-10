@@ -36,6 +36,16 @@ Route::controller(OrdersController::class)->group(function () {
     Route::get('orders/{order}', 'show')->name('orders.show');
     Route::put('orders/{order}', 'update')->name('orders.update');
     Route::delete('orders/{order}', 'delete')->name('orders.delete');
+
+    // nota fiscal
+    // emitir
+    // consultar
+    // cancelar
+    // todas as ações dependem de uma integração externa
+    // todas são POST
+    Route::post('orders/{order}/nota-fiscal/emitir', 'emitirNotaFiscal')->name('orders.nota-fiscal.emitir');
+    Route::post('orders/{order}/nota-fiscal/consultar', 'consultarNotaFiscal')->name('orders.nota-fiscal.consultar');
+    Route::post('orders/{order}/nota-fiscal/cancelar', 'cancelarNotaFiscal')->name('orders.nota-fiscal.cancelar');
 });
 
 // Redirect root to products

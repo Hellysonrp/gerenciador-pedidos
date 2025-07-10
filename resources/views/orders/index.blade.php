@@ -41,6 +41,67 @@
                                                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
                                         </a>
+                                        <!-- Botão Nota Fiscal -->
+                                        @php
+                                            $notaFiscalId = $order->nota_fiscal_id ?? null;
+                                            $notaFiscalStatus = $order->nota_fiscal_status ?? null;
+                                            $statusColors = [
+                                                0 => 'text-gray-400 hover:text-gray-600', // pendente
+                                                1 => 'text-green-600 hover:text-green-800', // autorizada
+                                                2 => 'text-orange-500 hover:text-orange-700', // cancelada
+                                                3 => 'text-red-600 hover:text-red-800', // rejeitada
+                                            ];
+                                            $statusTitles = [
+                                                0 => 'Consultar Nota Fiscal',
+                                                1 => 'Nota Fiscal Autorizada',
+                                                2 => 'Nota Fiscal Cancelada',
+                                                3 => 'Nota Fiscal Rejeitada',
+                                            ];
+                                            $iconColor = $statusColors[$notaFiscalStatus ?? 0] ?? 'text-gray-400';
+                                            $iconTitle = $statusTitles[$notaFiscalStatus ?? 0] ?? 'Emitir Nota Fiscal';
+                                        @endphp
+                                        @if(!$notaFiscalId || in_array($notaFiscalStatus, [2, 3]))
+                                            @php
+                                                $emitirTitle = 'Emitir Nota Fiscal';
+                                                if (in_array($notaFiscalStatus, [2, 3])) {
+                                                    $emitirTitle .= ' (Status: ' . ($notaFiscalStatus === 2 ? 'Cancelada' : ($notaFiscalStatus === 3 ? 'Rejeitada' : '')) . ')';
+                                                } elseif ($notaFiscalStatus === 0 && $notaFiscalId) {
+                                                    $emitirTitle .= ' (Status: Pendente)';
+                                                }
+                                            @endphp
+                                            <form action="{{ route('orders.nota-fiscal.emitir', $order->id) }}" method="POST" class="flex justify-end items-center gap-2">
+                                                @csrf
+                                                <button type="submit" title="{{ $emitirTitle }}" class="{{ $iconColor }}">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19v2m-6-2a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v12z" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        @endif
+                                        @if($notaFiscalId && !in_array($notaFiscalStatus, [2, 3]))
+                                            <form action="{{ $notaFiscalStatus == 0 ? route('orders.nota-fiscal.consultar', $order->id) : '#' }}" method="POST" class="flex justify-end items-center gap-2">
+                                                @csrf
+                                                <button type="submit" title="{{ $iconTitle }}" class="{{ $iconColor }}" @if($notaFiscalStatus != 0) disabled @endif>
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19v2m-6-2a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v12z" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                            @if($notaFiscalStatus == 1)
+                                                <form action="{{ route('orders.nota-fiscal.cancelar', $order->id) }}" method="POST" class="flex justify-end items-center gap-2">
+                                                    @csrf
+                                                    <button type="submit" title="Cancelar Nota Fiscal" class="text-orange-600 hover:text-orange-800"
+                                                        onclick="return confirm('Tem certeza que deseja cancelar a nota fiscal autorizada? Esta ação não pode ser desfeita.');">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        @endif
+                                        <!-- Botão Delete -->
                                         <form action="{{ route('orders.delete', $order->id) }}" method="POST"
                                             class="flex justify-end items-center gap-2">
                                             @csrf
